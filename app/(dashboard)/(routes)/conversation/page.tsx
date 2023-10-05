@@ -21,12 +21,12 @@ import { UserAvatar } from '@/components/user-avatar';
 import { BotAvatar } from '@/components/bot-avatar';
 import { useProModel } from '@/hooks/use-pro-model';
 import { toast } from 'react-hot-toast';
+import { useMessageContext } from './MessageContext';
 
 const ConversationPage = () => {
   const proModel = useProModel();
   const router = useRouter();
-  const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
-
+  const { messages, addMessage } = useMessageContext(); // Use the context here
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,13 +42,19 @@ const ConversationPage = () => {
         role: 'user',
         content: values.prompt,
       };
-      const newMessages = [...messages, userMessage];
+      addMessage(userMessage);
+
+      // const newMessages = [...messages, userMessage];
 
       const response = await axios.post('/api/conversation', {
-        messages: newMessages,
+        messages: [...messages, userMessage],
       });
 
-      setMessages((current) => [...current, userMessage, response.data]);
+      const botMessage: ChatCompletionRequestMessage = {
+        role: 'assistant',
+        content: response.data.content,
+      };
+      addMessage(botMessage);
 
       form.reset();
     } catch (error: any) {

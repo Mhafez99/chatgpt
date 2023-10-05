@@ -6,6 +6,7 @@ import { CrispProvider } from '@/components/crisp-provider';
 
 import ModelProvider from '@/components/model-provider';
 import ToasterProvider from '@/components/toaster-provider';
+import { MessageProvider } from './(dashboard)/(routes)/conversation/MessageContext';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -19,15 +20,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html lang='en'>
-        <CrispProvider />
-        <body className={inter.className}>
-          <ModelProvider />
-          <ToasterProvider/>
-          {children}
-        </body>
-      </html>
-    </ClerkProvider>
+    <MessageProvider>
+      <ClerkProvider>
+        <html lang='en'>
+          <CrispProvider />
+          <body className={inter.className}>
+            <ModelProvider />
+            <ToasterProvider />
+            {children}
+          </body>
+        </html>
+      </ClerkProvider>
+    </MessageProvider>
   );
 }
